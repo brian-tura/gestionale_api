@@ -4,7 +4,7 @@
   "pk": 2,
   "fields": {
     "fioritura": "Millefiori",
-    "luogo": "Via Brusadella 1 Forlì (FC)",
+    "luogo": "Via Brusadella 1 ForlÃ¬ (FC)",
     "latitudine": "44.219171",
     "longitudine": "11.975799",
     "note": ""
@@ -402,7 +402,7 @@
     "data": "2026-05-09",
     "titolo": "Controllo Cassa 8",
     "tipo": "lavoro",
-    "note": "1) Check melario se pieno 70% (2° melario messo sotto) \r\n2) Se 7 covata -> salasso 1 telaio a nucleo\r\n3) Inserimento TIT3 pos 2\r\n4) Possibile inserimento telaio vuoto al centro\r\n5) Marca Regina con Blu"
+    "note": "1) Check melario se pieno 70% (2Â° melario messo sotto) \r\n2) Se 7 covata -> salasso 1 telaio a nucleo\r\n3) Inserimento TIT3 pos 2\r\n4) Possibile inserimento telaio vuoto al centro\r\n5) Marca Regina con Blu"
   }
 },
 {
