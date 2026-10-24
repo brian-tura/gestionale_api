@@ -81,10 +81,20 @@ WSGI_APPLICATION = 'apicoltura.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 if os.getenv('DATABASE_URL'):
+    # Se in futuro collegherai un database esterno
     DATABASES = {
         'default': dj_database_url.config(conn_max_age=600)
     }
+elif os.getenv('RENDER'):
+    # In produzione su Render: usa SQLite (gratis per sempre e zero configurazione)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 else:
+    # Sul tuo computer in locale: continua a usare il tuo MySQL!
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
@@ -95,6 +105,7 @@ else:
             'PORT': os.getenv('DB_PORT', '3306'),
         }
     }
+
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
