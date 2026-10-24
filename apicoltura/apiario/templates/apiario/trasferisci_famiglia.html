@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#121417] min-h-screen text-white">
+    <nav class="bg-slate-800 p-4 border-b border-slate-700 flex items-center gap-4">
+        <a href="{% url 'dettagli_famiglia' famiglia.id %}" class="text-2xl">✕</a>
+        <h1 class="font-black uppercase text-sm tracking-widest">Sposta Famiglia</h1>
+    </nav>
+
+    <main class="p-6 max-w-xl mx-auto">
+        <div class="bg-slate-800/50 p-6 rounded-[2.5rem] border-2 border-slate-700 text-center mb-8">
+            <p class="text-xs font-bold text-slate-500 uppercase mb-2">Stai spostando la famiglia da:</p>
+            <h2 class="text-3xl font-black text-yellow-400 uppercase leading-none">{{ famiglia.arnia.codice_identificativo }}</h2>
+            <p class="text-[10px] text-slate-400 mt-2">({{ famiglia.arnia.get_categoria_display }})</p>
+        </div>
+
+        <h3 class="text-xs font-black text-slate-500 uppercase ml-2 mb-4">Seleziona la nuova cassa libera:</h3>
+        
+        <form method="POST" class="space-y-3">
+            {% csrf_token %}
+            <div class="grid grid-cols-1 gap-3">
+                {% for arnia in arnie_disponibili %}
+                <label class="relative flex items-center justify-between bg-[#1c1f26] p-5 rounded-3xl border-2 border-slate-700 cursor-pointer has-[:checked]:border-yellow-500 has-[:checked]:bg-yellow-500/5 transition-all">
+                    <div class="flex items-center gap-4">
+                        <input type="radio" name="nuova_arnia_id" value="{{ arnia.id }}" class="w-6 h-6 text-yellow-500 bg-slate-800 border-slate-600 focus:ring-0" required>
+                        <div>
+                            <span class="block text-xl font-black text-white uppercase">{{ arnia.codice_identificativo }}</span>
+                            <span class="text-[10px] font-bold text-slate-500 uppercase">{{ arnia.get_categoria_display }} - {{ arnia.colore|default:"Nessun colore" }}</span>
+                        </div>
+                    </div>
+                    <span class="text-2xl">🐝</span>
+                </label>
+                {% empty %}
+                <div class="text-center p-10 border-2 border-dashed border-slate-700 rounded-3xl">
+                    <p class="text-slate-500 font-bold uppercase text-xs">Non ci sono casse vuote disponibili in questo apiario.</p>
+                    <a href="{% url 'nuova_arnia' famiglia.arnia.apiario.id %}" class="text-yellow-500 text-[10px] font-black uppercase mt-4 block">+ Aggiungi nuova arnia</a>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if arnie_disponibili %}
+            <button type="submit" class="w-full bg-yellow-500 text-slate-900 py-5 rounded-[2rem] font-black uppercase text-lg shadow-2xl mt-8 active:scale-95 transition-all">
+                Conferma Travaso 🚀
+            </button>
+            {% endif %}
+        </form>
+    </main>
+</body>
+</html>

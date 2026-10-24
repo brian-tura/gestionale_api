@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .bee-gradient { background: linear-gradient(135deg, #facc15 0%, #eab308 100%); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        #carousel-viewport {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            padding: 0 10vw; 
+            align-items: center;
+        }
+
+        .month-card {
+            scroll-snap-align: center;
+            flex: 0 0 80vw; 
+            margin: 0 10px;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: scale(0.85);
+            opacity: 0.3;
+        }
+
+        .month-card.active {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .month-card.is-neighbor {
+            opacity: 0.6;
+        }
+
+        .spacer { flex: 0 0 10vw; shrink: 0; }
+
+        @media (min-width: 640px) {
+            .month-card { flex: 0 0 380px; }
+            #carousel-viewport { padding: 0 30vw; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+
+    <!-- HEADER -->
+    <nav class="bee-gradient p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-xl font-black text-slate-900 tracking-tight text-center mb-4">🌸 AGENDA {{ anno_corrente }}</h1>
+            
+            <div class="flex bg-white/20 rounded-xl p-1 backdrop-blur-sm">
+                <a href="{% url 'dashboard' %}" class="flex-1 py-2 text-center text-[10px] font-black uppercase text-slate-800 hover:bg-white/50 rounded-lg transition">Apiari</a>
+                <a href="{% url 'calendario' %}" class="flex-1 py-2 text-center text-[10px] font-black uppercase bg-white/90 text-slate-900 rounded-lg shadow-sm">Calendario</a>
+                <a href="{% url 'inventario' %}" class="flex-1 py-2 text-center text-[10px] font-black uppercase text-slate-800 hover:bg-white/50 rounded-lg transition">Scorte</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- TABS MESI (CENTRATA) -->
+    <div class="bg-white border-b border-slate-200 sticky top-[108px] z-40 overflow-x-auto hide-scrollbar py-3 shadow-sm">
+        <div class="flex justify-start sm:justify-center gap-2 px-4 min-w-max mx-auto">
+            {% for mese in calendario %}
+            <button onclick="activateMonth({{ mese.id }})" id="tab-{{ mese.id }}" 
+                class="month-tab flex-none px-5 py-1.5 rounded-full text-[10px] font-black uppercase transition-all
+                {% if mese.id == mese_corrente %} bg-slate-900 text-yellow-400 ring-2 ring-slate-900 ring-offset-2 {% else %} bg-slate-100 text-slate-400 border border-slate-200 {% endif %}">
+                {{ mese.nome|slice:":3" }}
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+
+    <main class="py-6">
+        <div id="carousel-viewport" class="hide-scrollbar">
+            <div class="spacer"></div>
+
+            {% for mese in calendario %}
+            <div id="card-{{ mese.id }}" class="month-card" data-index="{{ mese.id }}">
+                <div class="bg-white rounded-[2.5rem] shadow-xl border-2 border-slate-100 overflow-hidden text-slate-900">
+                    
+                    <!-- Header Card -->
+                    <div class="p-4 text-center text-white
+                        {% if mese.stagione == 'Primavera' %} bg-green-500
+                        {% elif mese.stagione == 'Estate' %} bg-orange-500
+                        {% elif mese.stagione == 'Autunno' %} bg-amber-600
+                        {% else %} bg-blue-500 {% endif %}">
+                        <h2 class="text-xl font-black uppercase tracking-widest">{{ mese.nome }}</h2>
+                        <p class="text-[9px] font-bold uppercase opacity-80">{{ mese.stagione }}</p>
+                    </div>
+
+                    <!-- GRIGLIA GIORNI -->
+                    <div class="p-4 bg-slate-50 border-b">
+                        <div class="grid grid-cols-7 gap-1 text-[7px] font-black text-slate-400 text-center mb-2 uppercase">
+                            <span>Lu</span><span>Ma</span><span>Me</span><span>Gi</span><span>Ve</span><span>Sa</span><span class="text-red-400">Do</span>
+                        </div>
+                        <div class="grid grid-cols-7 gap-1.5">
+                            {% for giorno in mese.griglia %}
+                                {% if giorno == None %}
+                                    <div class="aspect-square"></div>
+                                {% else %}
+                                    <div class="aspect-square flex flex-col items-center justify-center rounded-lg border-2 text-[10px] font-black relative
+                                        {% if mese.id == mese_corrente and giorno.giorno == giorno_corrente %} bg-yellow-400 text-slate-900 border-yellow-500 shadow-sm scale-110 z-10
+                                        {% elif giorno.eventi %} bg-white border-slate-300
+                                        {% else %} border-transparent text-slate-300 {% endif %}">
+                                        {{ giorno.giorno }}
+                                        {% if giorno.eventi %}
+                                            <div class="absolute bottom-1 flex gap-0.5">
+                                                {% for ev in giorno.eventi %}
+                                                <div class="w-1.5 h-1.5 rounded-full shadow-sm ring-1 ring-white
+                                                    {% if ev.tipo == 'trattamento' %} bg-blue-600 {% elif ev.tipo == 'nutrizione' %} bg-orange-600 {% else %} bg-rose-600 {% endif %}"></div>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- LISTA IMPEGNI + FIORITURE -->
+                    <div class="p-5 space-y-4 min-h-[250px] max-h-[400px] overflow-y-auto hide-scrollbar">
+                        
+                        <!-- Sezione Impegni -->
+                        <div>
+                            <p class="text-[9px] font-black text-slate-400 uppercase mb-2 tracking-widest italic">I tuoi impegni</p>
+                            {% for ev in mese.eventi_utente %}
+                            <div class="flex items-center justify-between bg-slate-50 p-2 rounded-xl border border-slate-100 shadow-sm mb-2">
+                                <div class="flex items-center gap-3">
+                                    <span class="bg-slate-900 text-white w-6 h-6 rounded flex items-center justify-center text-[10px] font-black">{{ ev.data|date:"d" }}</span>
+                                    <span class="text-xs font-bold text-slate-700 truncate max-w-[120px]">{{ ev.titolo }}</span>
+                                </div>
+                                <div class="flex gap-1">
+                                    <a href="{% url 'modifica_evento' ev.id %}" class="text-blue-400 p-1">✎</a>
+                                    <a href="{% url 'elimina_evento' ev.id %}" onclick="return confirm('Eliminare?')" class="text-red-300 p-1">✕</a>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <p class="text-center text-slate-300 text-[9px] uppercase font-bold py-2">Agenda libera</p>
+                            {% endfor %}
+                        </div>
+
+                        <!-- SEZIONE FIORITURE -->
+                        <div class="pt-4 border-t border-slate-100">
+                            <p class="text-[9px] font-black text-slate-400 uppercase mb-3 tracking-widest italic">Fioriture attese</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                {% for fiore in mese.fioriture %}
+                                <span class="bg-yellow-50 text-yellow-700 text-[9px] font-black px-2.5 py-1 rounded-lg border border-yellow-100 shadow-sm">
+                                    🌸 {{ fiore }}
+                                </span>
+                                {% empty %}
+                                <span class="text-[9px] text-slate-300 italic">Dati fioriture non disponibili</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+            <div class="spacer"></div>
+        </div>
+    </main>
+
+    <!-- FAB -->
+    <a href="{% url 'nuovo_evento' %}" class="fixed bottom-6 right-6 w-14 h-14 bg-slate-900 text-white rounded-full shadow-2xl flex items-center justify-center border-2 border-white z-50 transition-transform active:scale-90">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4" /></svg>
+    </a>
+
+    <script>
+        const viewport = document.getElementById('carousel-viewport');
+        const cards = document.querySelectorAll('.month-card');
+        const tabs = document.querySelectorAll('.month-tab');
+
+        function activateMonth(id) {
+            const targetCard = document.getElementById('card-' + id);
+            if (targetCard) {
+                targetCard.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            }
+
+            // AGGIUNTO: LOGICA EVIDENZA CARD (Ingrandisce la card selezionata)
+            cards.forEach(card => {
+                const cardIndex = parseInt(card.dataset.index);
+                card.classList.remove('active', 'is-neighbor');
+                if (cardIndex === id) {
+                    card.classList.add('active');
+                } else if (cardIndex === id - 1 || cardIndex === id + 1) {
+                    card.classList.add('is-neighbor');
+                }
+            });
+
+            // Centra il TAB cliccato nella barra superiore
+            const activeTab = document.getElementById('tab-' + id);
+            if (activeTab) {
+                activeTab.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                
+                document.querySelectorAll('.month-tab').forEach(tab => {
+                    tab.classList.remove('bg-slate-900', 'text-yellow-400', 'ring-2', 'ring-slate-900', 'ring-offset-2');
+                    tab.classList.add('bg-slate-100', 'text-slate-400', 'border', 'border-slate-200');
+                });
+                activeTab.classList.remove('bg-slate-100', 'text-slate-400', 'border', 'border-slate-200');
+                activeTab.classList.add('bg-slate-900', 'text-yellow-400', 'ring-2', 'ring-slate-900', 'ring-offset-2');
+            }
+        }
+
+        let isScrolling;
+        viewport.addEventListener('scroll', () => {
+            window.clearTimeout(isScrolling);
+            isScrolling = setTimeout(() => {
+                const center = viewport.scrollLeft + (viewport.offsetWidth / 2);
+                cards.forEach(card => {
+                    const cardCenter = card.offsetLeft + (card.offsetWidth / 2);
+                    if (Math.abs(center - cardCenter) < 50) activateMonth(parseInt(card.dataset.index));
+                });
+            }, 100);
+        });
+
+        window.onload = () => { setTimeout(() => activateMonth({{ mese_corrente }}), 100); };
+    </script>
+</body>
+</html>

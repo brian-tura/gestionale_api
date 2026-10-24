@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Trattamento di Massa</title>
+</head>
+<body class="bg-slate-50 pb-20">
+    <nav class="bg-blue-700 p-4 text-white shadow-md flex items-center">
+        <a href="{% url 'lista_arnie' apiario.id %}" class="mr-4">✕</a>
+        <h1 class="font-black uppercase">Trattamento Apiario</h1>
+    </nav>
+
+    <main class="p-4 max-w-xl mx-auto">
+        <form method="POST">
+            {% csrf_token %}
+            
+            <h2 class="text-xs font-bold text-slate-400 uppercase mb-3">1. Seleziona Famiglie</h2>
+            <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden mb-6">
+                <div class="p-3 bg-slate-50 border-b border-slate-200 flex justify-between">
+                    <button type="button" onclick="toggleAll(true)" class="text-blue-600 text-[10px] font-bold uppercase">Seleziona Tutte</button>
+                    <button type="button" onclick="toggleAll(false)" class="text-slate-400 text-[10px] font-bold uppercase">Deseleziona</button>
+                </div>
+                <div class="max-h-60 overflow-y-auto">
+                    {% for f in famiglie %}
+                    <label class="flex items-center p-4 border-b border-slate-100 last:border-0 cursor-pointer active:bg-blue-50">
+                        <input type="checkbox" name="famiglie_scelte" value="{{ f.id }}" checked class="fam-check w-5 h-5 text-blue-600 rounded">
+                        <span class="ml-4 font-bold text-slate-700">Arnia {{ f.arnia.codice_identificativo }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <h2 class="text-xs font-bold text-slate-400 uppercase mb-3">2. Dati Trattamento</h2>
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 space-y-4 shadow-sm">
+                <div>{{ form.data_inizio }}</div>
+                <div>{{ form.prodotto }}</div>
+                <div>{{ form.nome_commerciale }}</div>
+                <div>{{ form.note }}</div>
+            </div>
+
+            <button type="submit" class="w-full bg-blue-700 text-white py-4 rounded-2xl font-black mt-8 shadow-xl uppercase tracking-widest">
+                Applica a tutte le selezionate
+            </button>
+        </form>
+    </main>
+
+    <script>
+        function toggleAll(status) {
+            document.querySelectorAll('.fam-check').forEach(el => el.checked = status);
+        }
+    </script>
+</body>
+</html>

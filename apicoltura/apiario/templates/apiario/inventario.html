@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magazzino Scorte</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .bee-gradient { background: linear-gradient(135deg, #facc15 0%, #eab308 100%); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        /* Rimuove le freccette standard dai numeri */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+    </style>
+</head>
+<body class="bg-[#121417] min-h-screen pb-10 text-white">
+
+    <!-- HEADER E NAVBAR SUPERIORE -->
+    <nav class="bee-gradient p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-xl font-black text-slate-900 tracking-tight text-center mb-4">📦 MAGAZZINO SCORTE</h1>
+            
+            <div class="flex bg-black/20 rounded-xl p-1 backdrop-blur-sm">
+                <a href="{% url 'dashboard' %}" class="flex-1 py-2 text-center text-[10px] font-black uppercase text-slate-800 hover:bg-white/50 rounded-lg transition">Apiari</a>
+                <a href="{% url 'calendario' %}" class="flex-1 py-2 text-center text-[10px] font-black uppercase text-slate-800 hover:bg-white/50 rounded-lg transition">Calendario</a>
+                <a href="{% url 'inventario' %}" class="flex-1 py-2 text-center text-[10px] font-black uppercase bg-white/90 text-slate-900 rounded-lg shadow-sm">Scorte</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="p-4 max-w-5xl mx-auto">
+        
+        <!-- GRIGLIA INVENTARIO -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            
+            {% for s in scorte %}
+            <div class="bg-[#1c1f26] border-2 border-slate-700 rounded-[2.5rem] p-4 flex flex-col items-center justify-between shadow-2xl transition-all hover:border-yellow-500/50">
+                
+                <!-- Titolo Categoria (Sempre leggibile) -->
+                <div class="text-center h-10 flex items-center">
+                    <h3 class="text-[12px] font-black text-slate-400 uppercase tracking-tighter leading-tight">
+                        {{ s.get_categoria_display }}
+                    </h3>
+                </div>
+
+                <!-- Quantità (INPUT MANUALE GIGANTE) -->
+                <div class="my-4 w-full">
+                    <input type="number" 
+                           id="qty-{{ s.id }}" 
+                           value="{{ s.quantita }}"
+                           inputmode="numeric"
+                           onfocus="this.select()"
+                           onchange="manualUpdate({{ s.id }}, this.value)"
+                           class="w-full bg-transparent text-6xl font-black text-yellow-400 text-center focus:outline-none focus:text-white transition-colors"
+                           placeholder="0">
+                </div>
+
+                <!-- Tasti + e - (Giganti per le dita) -->
+                <div class="grid grid-cols-2 gap-3 w-full">
+                    <button onclick="stepUpdate({{ s.id }}, -1)" 
+                            class="py-4 bg-slate-800 rounded-2xl flex items-center justify-center text-3xl font-black text-red-500 border-2 border-slate-700 active:bg-red-500/20 active:scale-95 transition-all">
+                        -
+                    </button>
+                    
+                    <button onclick="stepUpdate({{ s.id }}, 1)" 
+                            class="py-4 bg-slate-800 rounded-2xl flex items-center justify-center text-3xl font-black text-green-500 border-2 border-slate-700 active:bg-green-500/20 active:scale-95 transition-all">
+                        +
+                    </button>
+                </div>
+
+            </div>
+            {% endfor %}
+
+        </div>
+    </main>
+
+    <script>
+        // Funzione per l'aggiornamento tramite tasti + e -
+        async function stepUpdate(id, delta) {
+            const input = document.getElementById('qty-' + id);
+            let currentVal = parseInt(input.value) || 0;
+            let newVal = Math.max(0, currentVal + delta);
+            
+            input.value = newVal; // Aggiornamento immediato visivo
+            await saveToServer(id, newVal);
+        }
+
+        // Funzione per l'aggiornamento manuale (quando digiti il numero)
+        async function manualUpdate(id, value) {
+            let newVal = Math.max(0, parseInt(value) || 0);
+            await saveToServer(id, newVal);
+        }
+
+        // Funzione cuore che parla con il database
+        async function saveToServer(id, value) {
+            try {
+                const response = await fetch('{% url "imposta_scorta_api" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: id,
+                        valore: value
+                    })
+                });
+
+                if (response.ok) {
+                    // Effetto grafico di successo (il numero pulsa)
+                    const input = document.getElementById('qty-' + id);
+                    input.classList.add('scale-110', 'text-white');
+                    setTimeout(() => {
+                        input.classList.remove('scale-110', 'text-white');
+                    }, 200);
+                } else {
+                    alert("Errore nel salvataggio");
+                }
+            } catch (err) {
+                console.error("Errore di rete:", err);
+            }
+        }
+    </script>
+</body>
+</html>

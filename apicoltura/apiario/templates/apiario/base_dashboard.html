@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeeApp - {% block title %}{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>.bee-gradient { background: linear-gradient(135deg, #facc15 0%, #eab308 100%); }</style>
+</head>
+<body class="bg-slate-50 min-h-screen pb-32">
+
+    <!-- HEADER E NAVBAR INTEGRATA IN ALTO -->
+    <nav class="bee-gradient p-4 shadow-lg sticky top-0 z-40">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-xl font-black text-slate-900 tracking-tight text-center mb-4">🐝 BEE MANAGER</h1>
+
+            <!-- NAVBAR TRE TASTI -->
+            <div class="flex bg-white/20 rounded-xl p-1 backdrop-blur-sm">
+                <a href="{% url 'dashboard' %}" class="flex-1 py-2 text-center text-[10px] font-black uppercase text-slate-800 hover:bg-white/50 rounded-lg transition">Apiari</a>
+                <a href="{% url 'calendario' %}" class="flex-1 py-2 text-center text-[10px] font-black uppercase text-slate-800 hover:bg-white/50 rounded-lg transition">Calendario</a>
+                <a href="{% url 'inventario' %}" class="flex-1 py-2 text-center text-[10px] font-black uppercase text-slate-800 hover:bg-white/50 rounded-lg transition">Scorte</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="p-4 max-w-4xl mx-auto">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- FAB: TASTO AGGIUNGI APIARIO -->
+    <a href="{% url 'nuovo_apiario' %}" 
+       class="fixed bottom-6 right-6 w-16 h-16 bg-slate-900 text-yellow-400 rounded-full shadow-2xl flex items-center justify-center transition-transform hover:scale-110 active:scale-95 z-50 border-2 border-white">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4" />
+        </svg>
+    </a>
+
+</body>
+</html>

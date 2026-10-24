@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#121417] min-h-screen text-white">
+    <nav class="bg-slate-800 p-4 border-b border-slate-700 flex items-center gap-4">
+        <a href="{% url 'dettagli_famiglia' famiglia.id %}" class="text-2xl font-bold">✕</a>
+        <h1 class="font-black uppercase text-sm tracking-widest">Inserimento Regina</h1>
+    </nav>
+
+    <main class="p-6 max-w-xl mx-auto space-y-6">
+        <div class="bg-yellow-400 p-6 rounded-[2.5rem] border-4 border-yellow-600 text-center shadow-xl">
+            <span class="text-4xl">👑</span>
+            <h2 class="text-2xl font-black text-slate-900 uppercase mt-2">Nuova Madre</h2>
+            <p class="text-sm font-bold text-slate-800 uppercase italic">Arnia {{ famiglia.arnia.codice_identificativo }}</p>
+        </div>
+
+        <!-- VISUALIZZAZIONE ERRORI SE IL SALVATAGGIO FALLISCE -->
+        {% if form.errors %}
+        <div class="bg-red-600 p-4 rounded-2xl border-2 border-red-400 text-white text-sm font-bold">
+            Attenzione: correggi gli errori nel modulo.
+            {{ form.errors }}
+        </div>
+        {% endif %}
+
+        <form method="POST" class="space-y-6">
+            {% csrf_token %}
+            
+            <div class="bg-[#1c1f26] p-5 rounded-3xl border-2 border-slate-700">
+                <label class="block text-[10px] font-black text-slate-500 uppercase mb-2 tracking-widest">Anno di Nascita</label>
+                {{ form.anno_nascita }}
+                <p class="text-[9px] text-yellow-500 mt-2 italic font-bold">Il colore verrà calcolato automaticamente.</p>
+            </div>
+
+            <div class="bg-[#1c1f26] p-5 rounded-3xl border-2 border-slate-700">
+                <label class="block text-[10px] font-black text-slate-500 uppercase mb-2 tracking-widest">Stato attuale</label>
+                {{ form.stato }}
+            </div>
+
+            <button type="submit" class="w-full bg-yellow-500 text-slate-900 py-5 rounded-[2rem] font-black uppercase text-lg shadow-2xl active:scale-95 transition-all">
+                Salva Regina
+            </button>
+        </form>
+    </main>
+</body>
+</html>

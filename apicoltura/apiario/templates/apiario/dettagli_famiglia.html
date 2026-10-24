@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dettagli Famiglia - Arnia {{ famiglia.arnia.codice_identificativo }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-slate-50 min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="bg-white border-b border-slate-200 p-4 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-4xl mx-auto flex items-center">
+            <a href="{% url 'lista_arnie' famiglia.arnia.apiario.id %}" class="mr-4 p-2 hover:bg-slate-100 rounded-full transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+            </a>
+            <div>
+                <h1 class="text-xl font-black text-slate-900 uppercase leading-none">Arnia {{ famiglia.arnia.codice_identificativo }}</h1>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{{ famiglia.arnia.apiario.luogo }}</p>
+            </div>
+        </div>
+    </nav>
+
+    <main class="p-4 max-w-4xl mx-auto pb-32">
+        
+        <!-- SEZIONE REGINA -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-sm font-black text-slate-800 uppercase flex items-center">
+                    <span class="mr-2 text-xl">👑</span> Regina
+                </h2>
+                <a href="{% url 'nuova_regina' famiglia.id %}" class="bg-slate-900 text-yellow-400 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase border border-slate-800 shadow-md active:scale-95 transition-all">
+                    {% if regina %}🔄 Sostituisci{% else %}➕ Aggiungi{% endif %}
+                </a>
+            </div>
+            
+            {% if regina %}
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                    <p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Stato Attuale</p>
+                    <p class="text-sm font-black text-slate-700 uppercase">{{ regina.stato }}</p>
+                </div>
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                    <p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Anno Nascita</p>
+                    <p class="text-sm font-black text-slate-700 uppercase">{{ regina.anno_nascita }}</p>
+                </div>
+            </div>
+            {% else %}
+                <div class="bg-red-50 border-2 border-dashed border-red-200 p-4 rounded-xl text-center">
+                    <p class="text-red-600 font-black text-xs uppercase italic tracking-tighter">Regina non registrata</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- VISTA DALL'ALTO (TOP VIEW) -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">Assetto Nido</h2>
+                <a href="{% url 'trasferisci_famiglia' famiglia.id %}" class="bg-slate-100 text-slate-500 px-3 py-1 rounded-lg text-[9px] font-black uppercase border border-slate-200 active:scale-95 transition-all">
+                    📦 Travasa
+                </a>
+            </div>
+
+            <div class="flex justify-center gap-1 bg-amber-900/10 p-2 rounded-lg border-x-8 border-amber-900/20 shadow-inner">
+                {% for stato in mappa_telaini %}
+                    <div class="flex-1 h-16 rounded-sm border-t-4 transition-all
+                        {% if stato == 'C' %} bg-red-500 border-red-700
+                        {% elif stato == 'S' %} bg-yellow-400 border-yellow-600
+                        {% elif stato == 'F' %} bg-blue-300 border-blue-500
+                        {% else %} bg-slate-200 border-slate-300 {% endif %}">
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- ULTIMA ISPEZIONE -->
+        <h3 class="text-[10px] font-black text-slate-400 uppercase mb-2 ml-2 tracking-widest text-center">Ultima Ispezione</h3>
+        {% if ultima_visita %}
+            <div class="bg-white rounded-[2rem] shadow-xl border-b-8 border-yellow-400 overflow-hidden mb-6 text-slate-900">
+                <div class="p-5">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <span class="text-2xl font-black uppercase leading-none">{{ ultima_visita.data_visita|date:"d" }}</span>
+                            <span class="text-sm font-bold text-slate-400 uppercase ml-1">{{ ultima_visita.data_visita|date:"F" }}</span>
+                        </div>
+                        <a href="{% url 'toggle_pin' ultima_visita.id %}" class="text-2xl p-2 active:scale-90 transition-transform">
+                            {% if ultima_visita.is_pinned %}📌{% else %}📍{% endif %}
+                        </a>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="flex gap-2">
+                            {% if ultima_visita.presenza_celle_reali %}
+                                <span class="bg-red-500 text-white text-[10px] font-black px-2 py-1 rounded-lg shadow-sm">CELLE REALI</span>
+                            {% endif %}
+                            {% if not ultima_visita.presenza_covata_fresca %}
+                                <span class="bg-orange-500 text-white text-[10px] font-black px-2 py-1 rounded-lg shadow-sm">NO COVATA FRESCA</span>
+                            {% endif %}
+                        </div>
+                        <!-- Testo nota completo -->
+                        <p class="text-sm font-bold text-slate-700 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                            {{ ultima_visita.note|default:'Nessuna nota inserita.' }}
+                        </p>
+                    </div>
+                </div>
+                <a href="/admin/apiario/visita/{{ ultima_visita.id }}/change/" class="block bg-slate-50 border-t border-slate-100 py-3 text-center text-[10px] font-black text-slate-400 hover:text-blue-500 uppercase transition">
+                    Modifica dati ultima visita
+                </a>
+            </div>
+        {% else %}
+            <div class="bg-white rounded-[2rem] p-8 border-2 border-dashed border-slate-200 text-center mb-6">
+                <p class="text-slate-400 italic text-sm">Nessuna ispezione registrata.</p>
+            </div>
+        {% endif %}
+
+        <!-- VISITE PINNED (NOTE IMPORTANTI - VISUALIZZAZIONE INTEGRALE) -->
+        {% if visite_pinned %}
+        <div class="mb-6">
+            <h3 class="text-[10px] font-black text-orange-600 uppercase mb-3 ml-2 tracking-widest flex items-center">
+                <span class="mr-2">📌</span> Note fissate importanti
+            </h3>
+            {% for v in visite_pinned %}
+                <div class="bg-orange-50 border-2 border-orange-200 rounded-3xl p-5 mb-4 flex flex-col shadow-sm relative">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="bg-orange-200 text-orange-700 text-[10px] font-black px-3 py-1 rounded-full uppercase">
+                            Ispezione del {{ v.data_visita|date:"d M y" }}
+                        </span>
+                        <a href="{% url 'toggle_pin' v.id %}" class="p-2 bg-white rounded-full shadow-sm text-lg active:scale-90 transition-transform">📌</a>
+                    </div>
+                    <!-- Nota integrale senza truncate -->
+                    <p class="text-sm font-bold text-slate-800 leading-relaxed whitespace-pre-wrap">{{ v.note }}</p>
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- TASTO STORICO -->
+        <a href="{% url 'storico_visite' famiglia.id %}" class="block w-full py-4 bg-slate-800 text-white text-center rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] border border-slate-700 shadow-lg active:scale-95 transition-all mb-10">
+            Vedi tutto lo storico
+        </a>
+
+        <!-- TRATTAMENTI -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xs font-black text-slate-800 uppercase flex items-center">
+                    <span class="mr-2">💉</span> Diario Trattamenti
+                </h2>
+                <a href="{% url 'nuovo_trattamento' famiglia.id %}" class="text-blue-600 text-[10px] font-black uppercase">Aggiungi +</a>
+            </div>
+            <div class="space-y-2">
+                {% for t in trattamenti %}
+                <div class="bg-blue-50 border border-blue-100 p-3 rounded-xl flex justify-between items-center">
+                    <div>
+                        <span class="text-[10px] font-black text-blue-800 uppercase">{{ t.get_prodotto_display }}</span>
+                        <p class="text-[10px] text-blue-600 font-bold">{{ t.nome_commerciale }}</p>
+                    </div>
+                    <span class="text-[9px] font-bold text-blue-400 uppercase">{{ t.data_inizio|date:"d M y" }}</span>
+                </div>
+                {% empty %}
+                <p class="text-center text-[10px] text-slate-400 italic">Nessun trattamento registrato.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- PRODUZIONE -->
+        <div class="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-[2.5rem] shadow-lg p-6 mb-6 text-slate-900">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xs font-black uppercase tracking-widest">🍯 Raccolto {{ anno_corrente }}</h2>
+                <a href="{% url 'nuovo_raccolto' famiglia.id %}" class="bg-white/30 px-3 py-1 rounded-full text-[10px] font-black uppercase">Registra</a>
+            </div>
+            <div class="flex items-end gap-2">
+                <span class="text-5xl font-black leading-none">{{ famiglia.produzione_totale_anno }}</span>
+                <span class="text-xl font-bold mb-1 uppercase">kg</span>
+            </div>
+        </div>
+
+        <!-- GRAFICO -->
+        <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-200 p-5 mb-6">
+            <h2 class="text-[10px] font-bold text-slate-400 uppercase mb-4 tracking-widest text-center italic">Andamento Produzione</h2>
+            <div class="h-64"><canvas id="chartProduzione"></canvas></div>
+        </div>
+
+    </main>
+
+    <!-- FAB -->
+    <div class="fixed bottom-6 right-6 flex flex-col gap-4 z-50">
+        <a href="{% url 'nuovo_raccolto' famiglia.id %}" class="w-14 h-14 bg-orange-500 text-white rounded-full shadow-2xl flex items-center justify-center border-2 border-white active:scale-90 transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+        </a>
+        <a href="{% url 'nuovo_trattamento' famiglia.id %}" class="w-14 h-14 bg-blue-600 text-white rounded-full shadow-2xl flex items-center justify-center border-2 border-white active:scale-90 transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        </a>
+        <a href="{% url 'nuova_visita' famiglia.id %}" class="w-14 h-14 bg-yellow-400 text-slate-900 rounded-full shadow-2xl flex items-center justify-center border-2 border-white active:scale-90 transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+        </a>
+    </div>
+
+    <!-- SCRIPT GRAFICO -->
+    <script>
+        const ctx = document.getElementById('chartProduzione').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {{ grafico_anni|safe }},
+                datasets: [{
+                    label: 'KG',
+                    data: {{ grafico_kg|safe }},
+                    borderColor: '#f59e0b',
+                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                    borderWidth: 4,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 6,
+                    pointBackgroundColor: '#f59e0b'
+                }]
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                scales: {
+                    y: { beginAtZero: true, grid: { display: false } },
+                    x: { grid: { display: false } }
+                },
+                plugins: { legend: { display: false } } 
+            }
+        });
+    </script>
+
+</body>
+</html>

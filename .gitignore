@@ -1,0 +1,17 @@
+.venv/
+
+__pycache__/
+*.py[cod]
+*$py.class
+
+db.sqlite3
+db.sqlite3-journal
+
+.env
+.env.local
+
+ngrok
+ngrok.exe
+*.exe
+.DS_Store
+Thumbs.db

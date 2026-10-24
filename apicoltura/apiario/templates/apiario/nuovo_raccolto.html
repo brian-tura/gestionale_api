@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Registra Raccolto</title>
+</head>
+<body class="bg-orange-50">
+    <nav class="bg-orange-500 p-4 text-white shadow-md flex justify-between">
+        <a href="{% url 'dettagli_famiglia' famiglia.id %}" class="font-bold">✕</a>
+        <h1 class="font-black uppercase italic">Smielatura Miele</h1>
+        <div></div>
+    </nav>
+
+    <main class="p-4 max-w-xl mx-auto">
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+            <div class="bg-white p-5 rounded-3xl border border-orange-200 shadow-sm">
+                <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2">Data Raccolto</label>
+                {{ form.data_raccolto }}
+            </div>
+            <div class="bg-white p-5 rounded-3xl border border-orange-200 shadow-sm">
+                <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2">Quantità prodotta (KG)</label>
+                {{ form.kg_miele }}
+            </div>
+            <div class="bg-white p-5 rounded-3xl border border-orange-200 shadow-sm">
+                <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2">Tipo di Miele</label>
+                {{ form.tipo_miele }}
+            </div>
+            <div class="bg-white p-5 rounded-3xl border border-orange-200 shadow-sm">
+                <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2">Note</label>
+                {{ form.note }}
+            </div>
+            <button type="submit" class="w-full bg-orange-600 text-white py-4 rounded-2xl font-black shadow-xl uppercase tracking-widest">
+                Salva Raccolto 🍯
+            </button>
+        </form>
+    </main>
+</body>
+</html>

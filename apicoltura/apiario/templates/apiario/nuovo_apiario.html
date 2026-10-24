@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuovo Apiario</title><script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 min-h-screen pb-10">
+    <nav class="bg-slate-900 p-4 sticky top-0 z-50 shadow-md flex items-center gap-4">
+        <a href="{% url 'dashboard' %}" class="text-white font-bold text-xl">✕</a>
+        <h1 class="font-black uppercase text-white tracking-tight text-sm">Crea Nuovo Apiario</h1>
+    </nav>
+
+    <main class="p-4 max-w-xl mx-auto space-y-6">
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+
+            <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200">
+                <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2">Luogo & Fioritura</label>
+                <div class="space-y-3">
+                    {{ form.luogo }}
+                    {{ form.fioritura }}
+                </div>
+            </div>
+
+            <!-- SEZIONE GPS CON TASTO AUTOMATICO -->
+            <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200">
+                <div class="flex justify-between items-center mb-4">
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase">Coordinate GPS</label>
+                    <button type="button" onclick="getLocation()" class="bg-blue-600 text-white text-[9px] font-black px-3 py-1.5 rounded-full uppercase shadow-sm active:scale-95">
+                        📍 Prendi posizione attuale
+                    </button>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    {{ form.latitudine }}
+                    {{ form.longitudine }}
+                </div>
+                <p id="gps-status" class="text-[9px] text-slate-400 mt-2 italic text-center"></p>
+            </div>
+
+            <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200">
+                <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2">Note Generali</label>
+                {{ form.note }}
+            </div>
+
+            <button type="submit" class="w-full bg-yellow-400 text-slate-900 py-5 rounded-3xl font-black uppercase text-lg shadow-xl active:scale-95 transition-all">
+                Salva Apiario
+            </button>
+        </form>
+    </main>
+
+    <script>
+        function getLocation() {
+            const status = document.getElementById('gps-status');
+            const latInput = document.getElementById('id_lat');
+            const lonInput = document.getElementById('id_lon');
+
+            if (!navigator.geolocation) {
+                status.innerText = "GPS non supportato dal browser";
+                return;
+            }
+
+            status.innerText = "Ricerca segnale GPS...";
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    latInput.value = position.coords.latitude.toFixed(6);
+                    lonInput.value = position.coords.longitude.toFixed(6);
+                    status.innerText = "✅ Posizione acquisita correttamente!";
+                },
+                () => {
+                    status.innerText = "❌ Impossibile accedere al GPS. Controlla i permessi.";
+                }
+            );
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Nuovo Trattamento</title>
+</head>
+<body class="bg-slate-50">
+    <nav class="bg-blue-600 p-4 text-white shadow-md flex justify-between">
+        <a href="{% url 'dettagli_famiglia' famiglia.id %}" class="font-bold">✕</a>
+        <h1 class="font-black uppercase">Registra Farmaco</h1>
+        <div></div>
+    </nav>
+
+    <main class="p-4 max-w-xl mx-auto">
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+            <div class="bg-white p-4 rounded-2xl border border-slate-200">
+                <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2">Data Inizio</label>
+                {{ form.data_inizio }}
+            </div>
+            <div class="bg-white p-4 rounded-2xl border border-slate-200">
+                <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2">Sostanza Attiva</label>
+                {{ form.prodotto }}
+            </div>
+            <div class="bg-white p-4 rounded-2xl border border-slate-200">
+                <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2">Nome Commerciale / Lotto</label>
+                {{ form.nome_commerciale }}
+            </div>
+            <div class="bg-white p-4 rounded-2xl border border-slate-200">
+                <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2">Note / Dosaggio</label>
+                {{ form.note }}
+            </div>
+            <button type="submit" class="w-full bg-blue-700 text-white py-4 rounded-2xl font-black shadow-xl uppercase">Salva Trattamento</button>
+        </form>
+    </main>
+</body>
+</html>

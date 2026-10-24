@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#121417] text-white min-h-screen">
+    <nav class="bg-slate-800 p-4 sticky top-0 z-50 flex items-center gap-4">
+        <a href="{% url 'dettagli_famiglia' famiglia.id %}" class="text-2xl">←</a>
+        <h1 class="font-black uppercase text-sm">Storico Arnia {{ famiglia.arnia.codice_identificativo }}</h1>
+    </nav>
+
+    <main class="p-4 max-w-xl mx-auto space-y-4">
+        {% for v in visite %}
+        <div class="bg-[#1c1f26] border border-slate-700 p-4 rounded-2xl flex justify-between items-center">
+            <div>
+                <span class="text-xs font-black text-yellow-500">{{ v.data_visita|date:"d M Y" }}</span>
+                <p class="text-sm text-slate-300 mt-1">{{ v.note|default:"Ispezione di routine" }}</p>
+            </div>
+            <!-- Tasto Pin anche qui nello storico -->
+            <a href="{% url 'toggle_pin' v.id %}" class="p-2 bg-slate-800 rounded-lg">
+                {% if v.is_pinned %}📌{% else %}📍{% endif %}
+            </a>
+        </div>
+        {% endfor %}
+    </main>
+</body>
+</html>

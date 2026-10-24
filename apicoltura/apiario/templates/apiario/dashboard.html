@@ -1,0 +1,63 @@
+{% extends 'apiario/base_dashboard.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<!-- Intestazione Lista -->
+<div class="flex justify-between items-center mb-4 px-1">
+    <h2 class="text-sm font-black text-slate-400 uppercase tracking-widest">I tuoi Apiari</h2>
+    <span class="text-[10px] bg-slate-200 px-2 py-1 rounded font-bold text-slate-500">{{ apiari.count }} Locazioni</span>
+</div>
+
+<!-- Grid Apiari -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+    {% for apiario in apiari %}
+    <div class="relative bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md hover:border-yellow-400 transition-all">
+
+        <!-- Link totale sulla card -->
+        <a href="{% url 'lista_arnie' apiario.id %}" class="absolute inset-0 z-10"></a>
+
+        <div class="p-4">
+            <div class="flex justify-between items-start mb-2">
+                <div class="flex items-center">
+                    <span class="text-xl mr-2">📍</span>
+                    <div>
+                        <!-- TITOLO: IL LUOGO -->
+                        <h3 class="text-lg font-black uppercase text-slate-900 leading-tight">
+                            {{ apiario.luogo }}
+                        </h3>
+                        <!-- SOTTOTITOLO: FIORITURA -->
+                        <p class="text-slate-400 text-[9px] italic uppercase font-bold mt-0.5">
+                            {{ apiario.fioritura|default:"Nessuna fioritura" }}
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- BADGE FAMIGLIE ATTIVE -->
+                <div class="bg-yellow-50 px-2 py-1 rounded-lg border border-yellow-100 flex flex-col items-center min-w-[3rem]">
+                    <span class="text-lg font-black text-yellow-700 leading-none">{{ apiario.famiglie_attive }}</span>
+                    <span class="text-[7px] uppercase font-black text-yellow-600">Famiglie</span>
+                </div>
+            </div>
+
+            <!-- FOOTER CARD: ARNIE VUOTE E TASTO -->
+            <div class="flex items-center justify-between pt-3 border-t border-slate-50 mt-2">
+                <span class="text-[9px] text-slate-400 font-bold uppercase">
+                    📦 {{ apiario.arnie_vuote }} Arnie vuote
+                </span>
+                
+                <div class="bg-slate-900 text-white px-3 py-1.5 rounded-lg text-[9px] font-black uppercase shadow-sm">
+                    Gestisci
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-span-full bg-white border-2 border-dashed border-slate-200 rounded-2xl p-10 text-center">
+        <p class="text-slate-400 text-sm font-medium italic">Nessun apiario registrato.</p>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

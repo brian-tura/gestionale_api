@@ -1,0 +1,34 @@
+{% extends 'apiario/base_dashboard.html' %}
+{% block title %}Regine{% endblock %}
+
+{% block content %}
+
+<div class="space-y-3">
+    {% for r in regine %}
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 flex items-center gap-4">
+
+        <div class="{{ r.color_class }} w-16 h-16 rounded-full flex flex-col items-center justify-center shadow-inner shrink-0">
+            <span class="text-[8px] font-bold uppercase leading-none">{{ r.color_name }}</span>
+            <span class="text-lg font-black">{{ r.anno_nascita }}</span>
+        </div>
+
+        <div class="flex-1 min-w-0">
+            <h3 class="font-black text-slate-800 truncate">
+                Arnia {{ r.famiglia.arnia.codice_identificativo }}
+            </h3>
+            <p class="text-xs text-slate-500 truncate uppercase font-bold">
+                {{ r.famiglia.arnia.apiario.luogo }}
+            </p>
+        </div>
+
+        <a href="{% url 'dettagli_famiglia' r.famiglia.id %}"
+           class="bg-slate-50 p-2 rounded-xl border border-slate-200 text-slate-400">
+           →
+        </a>
+    </div>
+    {% empty %}
+    <p class="text-center text-slate-400 mt-10 italic">Nessuna regina registrata.</p>
+    {% endfor %}
+</div>
+
+{% endblock %}
