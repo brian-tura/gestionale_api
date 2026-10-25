@@ -1,4 +1,11 @@
-# 🐝 BeeManager — Gestionale Personale per Apiario & Telemetria
+# 🐝 BeeManager — Gestionale Personale per Apiario
+
+![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Django](https://img.shields.io/badge/Django-5.2+-092E20?style=for-the-badge&logo=django&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Copernicus](https://img.shields.io/badge/ESA_Copernicus-Sentinel--2-003399?style=for-the-badge)
+
 Un progetto personale sviluppato in **Python e Django** per supportare il lavoro pratico sul campo nella gestione delle arnie e delle colonie. 
 
 ---
